@@ -94,18 +94,86 @@ class FetchProductTest extends TestCase
         })->values()->toArray();
 
         $response->assertStatus(Response::HTTP_OK);
+
         $response->assertExactJson([
-            'search' => null,
-            'per_page' => 1,
-            'page' => 1,
-            'order_by' => 'name:asc',
-            'recordset' => [
+            'params' => [
+                'search' => null,
+                'per_page' => 1,
+                'page' => 1,
+                'order_by' => 'name:asc',
+            ],
+            'meta' => [
                 'total' => 15,
                 'prev_page' => null,
                 'next_page' => 2,
                 'last_page' => 15,
-                'records' => $records,
             ],
+            'records' => $records,
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function returns_filtered_records()
+    {
+        $products = collect([
+            factory(Product::class)->create([
+                'id' => 1, 'name' => 'Trek Remedy 7 27.5', 'price' => '2200.00'
+            ]),
+            factory(Product::class)->create([
+                'id' => 2, 'name' => 'Trek Remedy 8 27.5', 'price' => '2700.00'
+            ]),
+            factory(Product::class)->create([
+                'id' => 3, 'name' => 'Trek Remedy 9.7 27.5', 'price' => '3300.00'
+            ]),
+            factory(Product::class)->create([
+                'id' => 4, 'name' => 'Yeti SB165 27.5', 'price' => '5599.00'
+            ]),
+            factory(Product::class)->create([
+                'id' => 5, 'name' => 'Yeti SB150 29', 'price' => '5699.00'
+            ]),
+            factory(Product::class)->create([
+                'id' => 6, 'name' => 'Kona Process 153 CR/DL 27.5', 'price' => '3500.00'
+            ]),
+            factory(Product::class)->create([
+                'id' => 7, 'name' => 'Kona Hei Hei 29', 'price' => '3650.00'
+            ]),
+        ]);
+
+        $response = $this->getJson(route('product.fetch', [
+            'search' => '27.5',
+            'order_by' => 'price:desc',
+            'per_page' => 2,
+            'page' => 2,
+        ]));
+
+        $records = $products->whereIn('id', [1, 2, 3, 4, 6])->map(function (Product $product) {
+            return array_merge(
+                $product->only('name', 'id', 'price'),
+                [
+                    'edit_url' => route('product.edit', $product->id),
+                    'destroy_url' => route('product.destroy', $product->id),
+                ]
+            );
+        })->sortByDesc('price')->skip(2)->take(2)->values()->toArray();
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertExactJson([
+            'params' => [
+                'search' => '27.5',
+                'order_by' => 'price:desc',
+                'per_page' => 2,
+                'page' => 2,
+            ],
+            'meta' => [
+                'total' => 5,
+                'prev_page' => 1,
+                'next_page' => 3,
+                'last_page' => 3,
+            ],
+            'records' => $records,
         ]);
     }
 }

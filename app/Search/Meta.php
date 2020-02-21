@@ -2,16 +2,10 @@
 
 namespace App\Search;
 
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\Support\Arrayable;
 
-class Recordset implements Arrayable
+class Meta implements Arrayable
 {
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    public Collection $records;
-
     /**
      * @var int
      */
@@ -33,16 +27,14 @@ class Recordset implements Arrayable
     public ?int $nextPage;
 
     /**
-     * Recordset constructor.
+     * Meta constructor.
      *
-     * @param  \Illuminate\Support\Collection $records
      * @param  int $total
      * @param  int $lastPage
      * @param  int|null $prevPage
      * @param  int|null $nextPage
      */
     public function __construct(
-        Collection $records,
         int $total,
         int $lastPage,
         int $prevPage = null,
@@ -50,7 +42,6 @@ class Recordset implements Arrayable
     )
     {
         $this->total = $total;
-        $this->records = $records;
         $this->lastPage = $lastPage;
         $this->prevPage = $prevPage;
         $this->nextPage = $nextPage;
@@ -66,7 +57,6 @@ class Recordset implements Arrayable
             'prev_page' => $this->prevPage,
             'next_page' => $this->nextPage,
             'last_page' => $this->lastPage,
-            'records' => $this->records,
         ];
     }
 }

@@ -6,7 +6,7 @@ use App\Search\Payloads\Payload;
 
 use Illuminate\Contracts\Support\Arrayable;
 
-class RequestData implements Arrayable
+class Params implements Arrayable
 {
     /**
      * @var \App\Search\Payloads\Payload
@@ -29,7 +29,7 @@ class RequestData implements Arrayable
     public string $orderBy;
 
     /**
-     * RequestData constructor.
+     * Params constructor.
      *
      * @param  \App\Search\Payloads\Payload $search
      * @param  int $perPage

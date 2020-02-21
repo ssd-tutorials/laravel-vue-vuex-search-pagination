@@ -2,12 +2,11 @@
 
 namespace App\Search\Queries;
 
+use App\Search\Meta;
+use App\Search\Params;
 use App\Search\OrderBy;
-use App\Search\Recordset;
-use App\Search\RequestData;
 
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Builder;
 
 abstract class Search
 {
@@ -17,50 +16,44 @@ abstract class Search
     protected OrderBy $order;
 
     /**
-     * @var \App\Search\RequestData
+     * @var \App\Search\Params
      */
-    protected RequestData $params;
+    protected Params $params;
 
     /**
      * Search constructor.
      *
-     * @param  \App\Search\RequestData $params
+     * @param  \App\Search\Params $params
      * @param  \App\Search\OrderBy $order
      */
-    public function __construct(RequestData $params, OrderBy $order)
+    public function __construct(Params $params, OrderBy $order)
     {
         $this->order = $order;
         $this->params = $params;
     }
 
     /**
-     * Get response.
+     * Get request parameters.
      *
-     * @return array
+     * @return \App\Search\Params
      */
-    public function response(): array
+    public function params(): Params
     {
-        return array_merge(
-            $this->params->toArray(),
-            ['recordset' => $this->recordset()->toArray()]
-        );
+        return $this->params;
     }
 
     /**
-     * Get recordset.
+     * Get meta.
      *
-     * @return \App\Search\Recordset
+     * @return \App\Search\Meta
      */
-    public function recordset(): Recordset
+    public function meta(): Meta
     {
-        $query = $this->query()->orderBy($this->order->field, $this->order->direction);
-
-        $total = $query->count('id');
+        $total = $this->total();
 
         $lastPage = $this->lastPage($total);
 
-        return new Recordset(
-            $this->records($query),
+        return new Meta(
             $total,
             $lastPage,
             $this->prevPage(),
@@ -69,30 +62,18 @@ abstract class Search
     }
 
     /**
-     * Get sql query.
+     * Get total number of records.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return int
      */
-    abstract protected function query(): Builder;
+    abstract public function total(): int;
 
     /**
      * Get records.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Support\Collection
      */
-    abstract protected function records(Builder $query): Collection;
-
-    /**
-     * Add limit query.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     */
-    protected function limit(Builder $query): void
-    {
-        $query->take($this->params->perPage)
-            ->skip(($this->params->page - 1) * $this->params->perPage);
-    }
+    abstract public function records(): Collection;
 
     /**
      * Get last page.
