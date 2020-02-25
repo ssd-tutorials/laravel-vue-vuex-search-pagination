@@ -1,19 +1,20 @@
 import Vue from 'vue';
-import AngleLeft from './components/Icons/AngleLeft';
-import DoubleAngleLeft from './components/Icons/DoubleAngleLeft';
-import AngleRight from './components/Icons/AngleRight';
-import DoubleAngleRight from './components/Icons/DoubleAngleRight';
-import TimesCircle from './components/Icons/TimesCircle';
+import store from './store/index';
 import SelectAngle from './components/Form/SelectAngle';
+import TimesCircle from './components/Icons/TimesCircle';
+
+import SearchForm from './components/Search/SearchForm';
+import SearchResults from './components/Search/SearchResults';
+import SearchPagination from './components/Search/SearchPagination';
 
 const app = new Vue({
+    store,
     el: '#app',
     components: {
-        AngleLeft,
-        DoubleAngleLeft,
-        AngleRight,
-        DoubleAngleRight,
         TimesCircle,
-        SelectAngle
+        SelectAngle,
+        SearchForm,
+        SearchResults,
+        SearchPagination
     }
 });
