@@ -33,7 +33,7 @@ class SearchOnlyPayload extends Payload
     public function toArray(): array
     {
         return [
-            'search' => $this->search,
+            'search' => (string)$this->search,
         ];
     }
 }

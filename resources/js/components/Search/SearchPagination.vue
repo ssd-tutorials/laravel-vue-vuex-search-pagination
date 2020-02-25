@@ -21,7 +21,7 @@
             <select
                 id="per_page"
                 class="appearance-none rounded-none block w-full bg-gray-200 focus:bg-white text-gray-700 border border-gray-400 focus:border-gray-500 py-3 pl-4 pr-8 leading-tight focus:outline-none"
-                :class="{ 'opacity-5': !hasPages }"
+                :class="{ 'opacity-50': !hasPages }"
                 :disabled="!hasPages"
                 @change="change"
             >
@@ -34,7 +34,7 @@
                     {{ page }}
                 </option>
             </select>
-            <select-angle :class="{ 'opacity-5': !hasPages }"></select-angle>
+            <select-angle :class="{ 'opacity-50': !hasPages }"></select-angle>
         </span>
         <span
             :class="buttonClass('next')"
@@ -82,9 +82,8 @@ export default {
         return {
             defaultClass: 'px-4 py-2 inline-flex border-solid',
             activeClass:
-                'cursor-pointer border-gray-400 hover:bg-gray-400 text-gray-700',
-            inactiveClass:
-                'cursor-not-allowed opacity-5 border-gray-300 text-gray-300'
+                'cursor-pointer border-gray-400 hover:bg-gray-300 text-gray-700',
+            inactiveClass: 'cursor-not-allowed border-gray-300 text-gray-300'
         };
     },
     computed: {

@@ -40,10 +40,10 @@ export default {
     methods: {
         ...mapActions('search', ['initiate', 'store', 'reset']),
         update: debounce(function() {
-            this.processing = true;
             this.change();
         }, 500),
         change() {
+            this.processing = true;
             this.store({
                 group: this.group,
                 params: this.fields

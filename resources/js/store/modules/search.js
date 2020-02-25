@@ -54,6 +54,9 @@ export const actions = {
         return ApiCaller.request(url, method, state.params[group]).then(
             response => {
                 commit('SET_RECORDS', { group, response: response.data });
+                if (response.data.params !== state.params[group]) {
+                    commit('STORE', { group, params: response.data.params });
+                }
             }
         );
     },

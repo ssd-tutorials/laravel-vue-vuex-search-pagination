@@ -97,7 +97,7 @@ class FetchProductTest extends TestCase
 
         $response->assertExactJson([
             'params' => [
-                'search' => null,
+                'search' => '',
                 'per_page' => 1,
                 'page' => 1,
                 'order_by' => 'name:asc',
@@ -172,6 +172,50 @@ class FetchProductTest extends TestCase
                 'prev_page' => 1,
                 'next_page' => 3,
                 'last_page' => 3,
+            ],
+            'records' => $records,
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function overwrites_last_page_if_current_page_exceeds_number_of_available_pages()
+    {
+        $products = factory(Product::class, 15)->create()->sortBy('name');
+
+
+        $response = $this->getJson(route('product.fetch', [
+            'search' => '',
+            'per_page' => 1,
+            'page' => 16,
+            'order_by' => 'name:asc',
+        ]));
+
+        $records = $products->skip(14)->take(1)->map(function (Product $product) {
+            return array_merge(
+                $product->only('name', 'id', 'price'),
+                [
+                    'edit_url' => route('product.edit', $product->id),
+                    'destroy_url' => route('product.destroy', $product->id),
+                ]
+            );
+        })->values()->toArray();
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertExactJson([
+            'params' => [
+                'search' => '',
+                'per_page' => 1,
+                'page' => 15,
+                'order_by' => 'name:asc',
+            ],
+            'meta' => [
+                'total' => 15,
+                'prev_page' => 14,
+                'next_page' => null,
+                'last_page' => 15,
             ],
             'records' => $records,
         ]);
